@@ -5,9 +5,9 @@
   "compatibility_date": "2025-02-11",
   "d1_databases": [
     {
-      "binding": "MY_DB",
-      "database_name": "my-database",
-      "database_id": ""
+      "binding": "DB",
+      "database_name": "agri-api",
+      "database_id": "1bdf072a-3743-4b1f-a833-4d0272e4b190"
     }
   ]
 }

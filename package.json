@@ -2,13 +2,21 @@
   "name": "agri-api",
   "scripts": {
     "dev": "wrangler dev",
-    "deploy": "wrangler deploy --minify"
+    "deploy": "wrangler deploy --minify",
+    "studio": "drizzle-kit studio",
+    "drizzle:generate": "drizzle-kit generate",
+    "drizzle:migrate": "drizzle-kit migrate",
+    "local:migrate": "wrangler d1 migrations apply agri-api --local",
+    "local:seed": "wrangler d1 execute agri-api --local --file=seed.sql"
   },
   "dependencies": {
+    "drizzle-orm": "^0.39.3",
     "hono": "^4.6.20"
   },
   "devDependencies": {
     "@cloudflare/workers-types": "^4.20250109.0",
+    "@types/node": "^22.13.1",
+    "drizzle-kit": "^0.30.4",
     "wrangler": "^3.101.0"
   }
 }
