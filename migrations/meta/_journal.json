@@ -15,6 +15,20 @@
       "when": 1739376874894,
       "tag": "0001_plain_ben_parker",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "6",
+      "when": 1739520775666,
+      "tag": "0002_workable_hellcat",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "6",
+      "when": 1739556695429,
+      "tag": "0003_mean_masked_marvel",
+      "breakpoints": true
     }
   ]
 }

@@ -1,11 +1,17 @@
 import { relations } from 'drizzle-orm';
-import { int, sqliteTable, text } from 'drizzle-orm/sqlite-core';
+import { int, sqliteTable, primaryKey, text } from 'drizzle-orm/sqlite-core';
 
 export const users = sqliteTable('users', {
     id: int().primaryKey({ autoIncrement: true }),
     name: text().notNull().default('ユーザー名'),
-    defaultReceive: text()
 });
+
+export const places = sqliteTable('places', {
+    userId: int().notNull(),
+    name: text(),
+    address: text().notNull(),
+    defaultReceive: int().notNull().default(0)
+}, (table) => [primaryKey({ columns: [table.userId, table.address] }),]);
 
 export const orders = sqliteTable('orders', {
     id: int().primaryKey({ autoIncrement: true }),
@@ -22,6 +28,8 @@ export const packing = sqliteTable('packing', {
     // amount: int().notNull(),
     content: text().notNull(),
     num: int(),
+    status: int().notNull().default(0),
+    // 0: "集荷準備中" | 1: "集荷待ち" | 2: "配送中" | 3: "受取待ち" | 4: "受取完了"
     receiveDate: text().notNull().default('未確定')
 })
 

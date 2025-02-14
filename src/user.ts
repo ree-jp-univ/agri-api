@@ -1,5 +1,5 @@
 import { Hono } from 'hono'
-import { farmer, orders, packing, users } from './schema'
+import { farmer, orders, packing, places, users } from './schema'
 import { drizzle } from 'drizzle-orm/d1'
 import { eq } from 'drizzle-orm'
 
@@ -129,23 +129,23 @@ user.get('/place', async (c) => {
     const userIdNum = parseInt(userIdQuery)
 
     try {
-        const userResult = await db.select().from(users).where(eq(users.id, userIdNum))
+        const placeResult = await db.select().from(places).where(eq(places.userId, userIdNum))
 
         let receivePlace;
-        if (userResult.length === 0) {
+        if (placeResult.length === 0) {
             receivePlace = '登録されていません'
             // return c.json({ error: 'No such user' }, 404)
         } else {
-            receivePlace = userResult[0].defaultReceive
+            receivePlace = placeResult[0].defaultReceive
         }
-        return c.json({ userId: userIdQuery, receivePlace: receivePlace, defaultReceive: true })
+        return c.json(placeResult)
     } catch (error) {
         console.error(error)
         return c.json({ error: 'Internal Server Error' }, 500)
     }
 })
 
-user.post('place', async (c) => {
+user.post('/place', async (c) => {
     const db = drizzle(c.env.DB)
     try {
         const body = await c.req.json()
@@ -157,10 +157,23 @@ user.post('place', async (c) => {
             return c.json({ error: 'Bad request' }, 400)
         }
 
-        await db.insert(users).values({ id: parseInt(userId), defaultReceive: receivePlace })
-            .onConflictDoUpdate({ target: users.id, set: { defaultReceive: receivePlace } })
-        return c.json({ message: 'デフォルトの配送場所が更新されました' })
+        // defaultReceive が true の場合、同じ userId の全ての配送場所を false に更新する
+        if (defaultReceive === true) {
+            await db.update(places)
+                .set({ defaultReceive: 0 })
+                .where(eq(places.userId, parseInt(userId)))
+        }
 
+        await db.insert(places).values({
+            userId: parseInt(userId),
+            address: receivePlace,
+            defaultReceive: defaultReceive ? 1 : 0,
+        }).onConflictDoUpdate({
+            target: [places.userId, places.address],
+            set: { defaultReceive: defaultReceive ? 1 : 0 }
+        })
+
+        return c.json({ message: '配送場所を登録しました' })
     } catch (error) {
         console.error(error)
         return c.json({ error: 'Internal Server Error' }, 500)
